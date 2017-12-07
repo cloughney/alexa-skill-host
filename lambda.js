@@ -20,7 +20,7 @@ const powerHandlers = {
             port: config.server.apiPort,
             method: 'POST',
             path: '/power',
-            body: { state: 'Off' },
+            body: { state: 'Hibernation' },
             rejectUnauthorized: false,
             headers: { 'Content-Type': 'application/json' }
         };
