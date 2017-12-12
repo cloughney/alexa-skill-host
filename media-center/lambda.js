@@ -4,7 +4,7 @@ const Alexa = require('alexa-sdk');
 const wol = require('node-wol');
 const https = require('https');
 
-const config = require('./config.json');
+const config = require('../config.json');
 
 const powerHandlers = {
     'PowerOnIntent': function () {
@@ -19,7 +19,7 @@ const powerHandlers = {
             hostname: config.server.apiHost,
             port: config.server.apiPort,
             method: 'POST',
-            path: '/power',
+            path: '/applications/switch',
             body: { state: 'Hibernation' },
             rejectUnauthorized: false,
             headers: { 'Content-Type': 'application/json' }
