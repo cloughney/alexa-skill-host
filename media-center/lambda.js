@@ -4,7 +4,7 @@ const Alexa = require('alexa-sdk');
 const wol = require('node-wol');
 const https = require('https');
 
-const config = require('../config.json');
+const config = require('../config.secret.json');
 
 const powerHandlers = {
     'PowerOnIntent': function () {
