@@ -3,7 +3,7 @@
 const Alexa = require('alexa-sdk');
 const http = require('http');
 
-const config = require('../config.secret.json');
+//const config = require('../config.secret.json');
 
 function sendRequest(alexa, path, body) {
     const options = { 

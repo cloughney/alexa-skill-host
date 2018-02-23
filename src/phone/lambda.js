@@ -3,7 +3,7 @@
 const Alexa = require('alexa-sdk');
 const https = require('https');
 
-const config = require('../config.secret.json');
+//const config = require('../config.secret.json');
 
 function getUserFromConfig(session, config) {
     const userId = session.user.userId;

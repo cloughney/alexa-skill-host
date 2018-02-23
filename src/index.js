@@ -1,6 +1,6 @@
 'use strict';
 
-const config = require('./config');
+const config = require('../config');
 
 const express = require('express');
 const https = require('https');
@@ -24,15 +24,15 @@ const app = express()
 
 config.lambdas.forEach(x => 
     app.post(`/alexa/${x.name}`, (req, res) => {
-        routeRequest(req, res, x.name, require(x.handler));
+        routeRequest(req, res, x.name, x.handler);
     }));
 
 const server = https.createServer({
-    key: fs.readFileSync('server.key'),
-    cert: fs.readFileSync('server.crt'),
-    ca: fs.readFileSync('chain.crt')
+    cert: fs.readFileSync(config.server.certs.domain),
+    key: fs.readFileSync(config.server.certs.domainKey),
+    ca: fs.readFileSync(config.server.certs.ca)
 }, app);
 
-server.listen(443, '0.0.0.0', () => {
+server.listen(config.server.port, config.server.hostname, () => {
     console.log('Alexa skill host is active.');
 });
