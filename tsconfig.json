@@ -6,7 +6,7 @@
 		"removeComments": true,
 		"sourceMap": true,
 		"lib": ["es2015"],
-		"allowJs": true
+		"outDir": "dist"
     },
     "compileOnSave": false,
     "include": ["src/**/*.ts"]
