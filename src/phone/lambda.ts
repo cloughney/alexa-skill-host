@@ -39,20 +39,20 @@ const handlers: Alexa.Handlers<Alexa.Request> = {
             const userId = this.event.session.user.userId;
             const user = await userService.getUserByAmazonId(userId);
 
-            if (!user) {
-                console.log(`Cannot find uid ${userId}.`);
-                this.emit(':tell', 'I have no idea where your phone is.');
-                return;
+            if (user === undefined) {
+                console.warn(`Cannot find user with ID ${userId}.`);
+                return this.emit(':tell', 'I have no idea where your phone is.');
             }
             
             const { apiKey, deviceId } = user.integrations['join'];
-            
+
             await sendRequest(apiKey, deviceId, { find: true });
 
             this.emit(':tell', `Do you hear it?`)
-
         } catch (err) {
+            console.error('Cannot handle the LocatePhone intent.');
             console.dir(err);
+
             this.emit(':tell', 'Something went wrong!');
         }
     }

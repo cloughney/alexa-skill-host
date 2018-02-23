@@ -16,10 +16,18 @@ export default class UserService {
         this.db = client.db.use('users');
     }
 
-    public getUserByAmazonId(id: string): Promise<User> {
+    public getUserByAmazonId(id: string): Promise<User|undefined> {
         return new Promise((resolve, reject) => {
            this.db.get(id, (err, user) => {
-               err ? reject(err) : resolve(user);
+               if (!err) {
+                   return resolve(user);
+               }
+
+               if (err.error === 'not_found') {
+                   return resolve(undefined);
+               }
+
+               reject(err);
             });
         });
     }
