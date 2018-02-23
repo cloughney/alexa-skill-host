@@ -16,8 +16,7 @@ function routeRequest(request, response, name, lambda) {
         .then(x => { return response.status(200).json(x); })
         .catch(x => { console.log(x); });
 
-    
-    lambda.handler(request.body, requestContext);
+        lambda.handler(request.body, requestContext);
 }
 
 const app = express()
@@ -25,14 +24,13 @@ const app = express()
 
 config.lambdas.forEach(x => 
     app.post(`/alexa/${x.name}`, (req, res) => {
-        routeRequest(req, res, x.name, x.handler);
+        routeRequest(req, res, x.name, require(x.handler));
     }));
-
-app.all('/.well-known/acme-challenge/knbQ8Y6VhPU3_AvQVSFd54HV7j7t6FqR1KwbO0l9fmo', (req, res) => { res.status(200).send('knbQ8Y6VhPU3_AvQVSFd54HV7j7t6FqR1KwbO0l9fmo'); })
 
 const server = https.createServer({
     key: fs.readFileSync('server.key'),
-    cert: fs.readFileSync('server.crt')
+    cert: fs.readFileSync('server.crt'),
+    ca: fs.readFileSync('chain.crt')
 }, app);
 
 server.listen(443, '0.0.0.0', () => {

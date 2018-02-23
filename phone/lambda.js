@@ -5,6 +5,14 @@ const https = require('https');
 
 const config = require('../config.secret.json');
 
+function getUserFromConfig(session, config) {
+    const userId = session.user.userId;
+    const username = Object.getOwnPropertyNames(config.users)
+        .find(x => config.users[x].uid === userId);
+
+    return config.users[username];
+}
+
 function sendRequest(apiKey, deviceId, fields) {
     const hostname = 'joinjoaomgcd.appspot.com';
     const rootPath = '/_ah/api/messaging/v1/sendPush';
@@ -34,19 +42,16 @@ const handlers = {
     'LocatePhone': function () {
         console.log('Handling LocatePhone intent.');
 
-        const userId = this.event.session.user.userId;
-        const username = Object.getOwnPropertyNames(config.users)
-            .find(x => config.users[x].uid === userId);
+        const user = getUserFromConfig(this.event.session, config);
 
-        if (!username) {
+        if (!user) {
             console.log(`Cannot find uid ${userId}.`);
             this.emit(':tell', 'I have no idea where your phone is.');
             return;
         }
-
-        const user = config.users[username];
+        
         sendRequest(user.join.apiKey, user.join.deviceId, { find: true })
-            .then(() => { this.emit(':tell', `It should be ringing, ${username}.`) })
+            .then(() => { this.emit(':tell', `Do you hear it?`) })
             .catch(err => { console.dir(err); });
     }
 };
