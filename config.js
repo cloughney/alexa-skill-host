@@ -1,4 +1,4 @@
-module.exports = {
+exports.default = {
 
     server: {
         hostname: '0.0.0.0',
@@ -11,9 +11,9 @@ module.exports = {
     },
 
     lambdas: [
-        { "name": "media-center", "handler": require('./src/media-center/lambda') },
-        { "name": "unicorn", "handler": require('./src/unicorn/lambda') },
-        { "name": "phone", "handler": require('./src/phone/lambda') }
+        { name: "media-center", lambda: require('./src/media-center/lambda') },
+        { name: "unicorn", lambda: require('./src/unicorn/lambda') },
+        { name: "phone", lambda: require('./src/phone/lambda') }
     ]
 
 };

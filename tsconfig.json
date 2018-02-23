@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"target": "es6",
+		"module": "commonjs",
+		"strict": true,
+		"removeComments": true,
+		"sourceMap": true,
+		"lib": ["es2015"],
+		"allowJs": true
+    },
+    "compileOnSave": false,
+    "include": ["src/**/*.ts"]
+}
