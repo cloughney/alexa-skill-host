@@ -11,9 +11,9 @@ exports.default = {
     },
 
     lambdas: [
-        { name: "media-center", lambda: require('./src/media-center/lambda') },
-        { name: "unicorn", lambda: require('./src/unicorn/lambda') },
-        { name: "phone", lambda: require('./src/phone/lambda') }
+        { name: "media-center", lambda: require('./dist/media-center/lambda') },
+        { name: "unicorn", lambda: require('./dist/unicorn/lambda') },
+        { name: "phone", lambda: require('./dist/phone/lambda') }
     ]
 
 };

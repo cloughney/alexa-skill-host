@@ -2,6 +2,8 @@ import * as Alexa from 'alexa-sdk'
 import { IncomingMessage } from 'http';
 import { request as createHttpsRequest } from 'https';
 
+import UserService, { User } from '../users/user-service';
+
 function sendRequest(apiKey: string, deviceId: string, fields: { [fieldName: string]: any }): Promise<IncomingMessage> {
     //TODO config this
     const hostname = 'joinjoaomgcd.appspot.com';
@@ -29,20 +31,30 @@ function sendRequest(apiKey: string, deviceId: string, fields: { [fieldName: str
 }
 
 const handlers: Alexa.Handlers<Alexa.Request> = {
-    'LocatePhone': function () {
+    'LocatePhone': async function() {
         console.log('Handling LocatePhone intent.');
 
-        const user = null; //TODO db stuff
+        try {
+            const userService = new UserService();
+            const userId = this.event.session.user.userId;
+            const user = await userService.getUserByAmazonId(userId);
 
-        // if (!user) {
-        //     console.log(`Cannot find uid ${userId}.`);
-        //     this.emit(':tell', 'I have no idea where your phone is.');
-        //     return;
-        // }
-        
-        // sendRequest(user.join.apiKey, user.join.deviceId, { find: true })
-        //     .then(() => { this.emit(':tell', `Do you hear it?`) })
-        //     .catch(err => { console.dir(err); });
+            if (!user) {
+                console.log(`Cannot find uid ${userId}.`);
+                this.emit(':tell', 'I have no idea where your phone is.');
+                return;
+            }
+            
+            const { apiKey, deviceId } = user.integrations['join'];
+            
+            await sendRequest(apiKey, deviceId, { find: true });
+
+            this.emit(':tell', `Do you hear it?`)
+
+        } catch (err) {
+            console.dir(err);
+            this.emit(':tell', 'Something went wrong!');
+        }
     }
 };
 
