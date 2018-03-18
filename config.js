@@ -2,7 +2,7 @@ exports.default = {
 
     server: {
         hostname: '0.0.0.0',
-        port: 443,
+        port: 8081,
         certs: {
             domain: process.env['LAMBDA_DOMAIN_CERT'],
             domainKey: process.env['LAMBDA_DOMAIN_KEY'],
