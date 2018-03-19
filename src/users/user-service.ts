@@ -39,7 +39,7 @@ export default class UserService {
     	this.users.push(user);
     	this.usersById[user.amazonUid] = user;
 
-    	return new Promise((resolve, reject) => {
+    	return new Promise<User>((resolve, reject) => {
         	fs.writeFile('/usr/local/function-host/.users', JSON.stringify(this.users), err => {
         		err ? reject(err) : resolve(user);
         	});
