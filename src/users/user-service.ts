@@ -39,7 +39,7 @@ export default class UserService {
 
     public saveUser(user: User): Promise<User> {
     	if (this.usersById[user.amazonUid]) {
-    		return; //TODO this should update the user...
+    		throw new Error('not implemented'); //TODO this should update the user...
     	}
 
     	this.users.push(user);
@@ -50,6 +50,12 @@ export default class UserService {
         		err ? reject(err) : resolve(user);
         	});
         });
+    }
+
+    private getUsers(): Promise<User[]> {
+    	return this.users !== undefined
+    		? Promise.resolve(this.users)
+    		: this.getUsersFromFile().then(x => this.users = x);
     }
 
     private getUsersFromFile(): Promise<User[]> {
