@@ -29,14 +29,12 @@ export default class UserService {
 				this.usersById = {};
 				users.forEach(x => this.usersById[x.amazonUid] = x);
 			});
-    	})
+    	});
 
-    	return getUsers.then(users =>
-    		new Promise(resolve => {
-	    		const user = this.usersById[id];
-	    		user ? resolve(user) : resolve(undefined);
-            });
-        });
+    	return getUsers.then(users => new Promise(resolve => {
+    		const user = this.usersById[id];
+    		user ? resolve(user) : resolve(undefined);
+        }));
     }
 
     public saveUser(user: User): Promise<User> {
