@@ -10,28 +10,18 @@ export interface User {
 }
 
 export default class UserService {
-	private users: User[] | undefined;
+	private isUserFileLoaded: boolean;
+	private users: User[];
 	private usersById: { [id: string]: User };
 
     public constructor() {
-    	this.users = undefined;
+    	this.isUserFileLoaded = false;
+    	this.users = [];
     	this.usersById = {};
     }
 
     public getUserByAmazonId(id: string): Promise<User|undefined> {
-    	const getUsers = new Promise(resolve => {
-    		if (this.users === undefined) {
-    			return Promise.resolve(this.users);
-    		}
-
-    		return this.getUsersFromFile().then(users => {
-				this.users = users;
-				this.usersById = {};
-				users.forEach(x => this.usersById[x.amazonUid] = x);
-			});
-    	});
-
-    	return getUsers.then(users => new Promise<User|undefined>(resolve => {
+    	return this.getUsers().then(users => new Promise<User|undefined>(resolve => {
     		const user = this.usersById[id];
     		user ? resolve(user) : resolve(undefined);
         }));
@@ -42,18 +32,18 @@ export default class UserService {
     		throw new Error('not implemented'); //TODO this should update the user...
     	}
 
-    	this.users.push(user);
-    	this.usersById[user.amazonUid] = user;
-
-        return new Promise((resolve, reject) => {
+    	this.getUsers().then(users => {
+    		this.users.push(user);
+    		this.usersById[user.amazonUid] = user;
+    	}).then(() => new Promise((resolve, reject) => {
         	fs.writeFile('/usr/local/function-host/.users', JSON.stringify(this.users), err => {
         		err ? reject(err) : resolve(user);
         	});
-        });
+        }));
     }
 
     private getUsers(): Promise<User[]> {
-    	return this.users !== undefined
+    	return this.isUserFileLoaded
     		? Promise.resolve(this.users)
     		: this.getUsersFromFile().then(x => this.users = x);
     }
