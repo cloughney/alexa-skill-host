@@ -17,7 +17,7 @@ function sendRequest(apiKey: string, deviceId: string, fields: { [fieldName: str
         .map(fieldName => encodeURI(`${fieldName}=${fields[fieldName]}`))
         .join('&');
 
-    const options = { 
+    const options = {
         hostname,
         method: 'GET',
         path: `${rootPath}?${queryParams}`
@@ -43,7 +43,7 @@ const handlers: Alexa.Handlers<Alexa.Request> = {
                 console.warn(`Cannot find user with ID ${userId}.`);
                 return this.emit(':tell', 'I have no idea where your phone is.');
             }
-            
+
             const { apiKey, deviceId } = user.integrations['join'];
 
             await sendRequest(apiKey, deviceId, { find: true });
