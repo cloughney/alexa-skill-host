@@ -26,7 +26,7 @@ export default class UserService {
     	return new Promise<User|undefined>(resolve => {
     		const user = this.usersById[id];
     		user ? resolve(user) : resolve(undefined);
-        }));
+        });
     }
 
     public async saveUser(user: User): Promise<User> {
