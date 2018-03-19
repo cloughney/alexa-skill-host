@@ -10,12 +10,12 @@ export interface User {
 }
 
 export default class UserService {
-	private users: User[];
+	private users: User[] | undefined;
 	private usersById: { [id: string]: User };
 
     public constructor() {
     	this.users = undefined;
-    	this.usersById = undefined;
+    	this.usersById = {};
     }
 
     public getUserByAmazonId(id: string): Promise<User|undefined> {
@@ -31,7 +31,7 @@ export default class UserService {
 			});
     	});
 
-    	return getUsers.then(users => new Promise(resolve => {
+    	return getUsers.then(users => new Promise<User|undefined>(resolve => {
     		const user = this.usersById[id];
     		user ? resolve(user) : resolve(undefined);
         }));
