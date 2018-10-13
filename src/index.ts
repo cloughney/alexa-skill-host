@@ -5,11 +5,11 @@ import { LambdaHandler } from 'ask-sdk-core/dist/skill/factory/BaseSkillFactory'
 
 import config from '../config';
 
-function routeRequest(request: express.Request, response: express.Response, name: string, lambda: LambdaHandler): void {
+function routeRequest(request: express.Request, response: express.Response, name: string, handler: LambdaHandler): void {
     console.log('Accepting ' + name + ' request');
 
     const requestContext = context();
-    lambda(request.body, requestContext, (err, result) => {
+    handler(request.body, requestContext, (err, result) => {
         console.log(err);
         console.log(result);
 
@@ -27,9 +27,7 @@ const app = express()
 
 config.lambdas.forEach(x =>
     app.post(`/alexa/${x.name}`, (req, res) => {
-        console.log(req);
-        console.log(x.lambda);
-        routeRequest(req, res, x.name, x.lambda);
+        routeRequest(req, res, x.name, x.lambda.handler);
     }));
 
 app.listen(config.server.port, config.server.hostname, () => {

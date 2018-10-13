@@ -12,7 +12,7 @@ interface ServerConfiguration {
 
 interface LambdaModuleConfiguration {
     name: string;
-    lambda: LambdaHandler;
+    lambda: { handler: LambdaHandler };
 }
 
 interface Configuration {
