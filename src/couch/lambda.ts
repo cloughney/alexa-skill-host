@@ -1,6 +1,6 @@
 import * as Alexa from 'ask-sdk-core';
 import { IntentRequest } from 'ask-sdk-model';
-import * as http from 'http';
+import * as request from 'request';
 
 const colors: { [color: string ]: { r: number, g: number, b: number } } = {
     'red': { r: 255, g: 0, b: 0 },
@@ -9,23 +9,20 @@ const colors: { [color: string ]: { r: number, g: number, b: number } } = {
 };
 
 async function sendRequest(path: string, body?: any): Promise<void> {
-    const options = {
-        method: 'POST', 
-        hostname: '192.168.1.174',
-        port: 80,
-        path,
-        headers: { 'Content-Type': 'application/json' }
+    const options: request.CoreOptions = {
+        method: 'POST',
+        json: body
     };
 
     return new Promise<void>((resolve, reject) => {
-        const request = http.request(options, resp => resolve())
-            .on('error', err => reject(err));
-        
-        if (body) {
-            request.write(JSON.stringify(body));
-        }
+        request(`http://192.168.1.174${path}`, options, (err, response, body) => {
+            if (err || response.statusCode !== 200) {
+                reject(err || body);
+                return;
+            }
 
-        request.end();
+            resolve();
+        });
     });
 }
 
