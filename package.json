@@ -4,7 +4,8 @@
   "description": "An Alexa skill for controlling the Media Center server.",
   "main": "index.js",
   "dependencies": {
-    "alexa-sdk": "^1.0.22",
+    "ask-sdk-core": "^2.1.0",
+    "ask-sdk-model": "^1.7.1",
     "aws-lambda-mock-context": "^3.1.1",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
