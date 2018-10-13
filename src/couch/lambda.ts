@@ -96,9 +96,4 @@ exports.handler = skillBuilder
         TurnOffHandler
     )
     .lambda();
-
-// function (event: Alexa.RequestBody<Alexa.Request>, context: Alexa.Context) {
-//     const alexa = Alexa.handler(event, context);
-//     alexa.registerHandlers(handlers);
-//     alexa.execute();
-// };
+    
