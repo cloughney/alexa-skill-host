@@ -1,4 +1,5 @@
 import * as Alexa from 'ask-sdk-core';
+import { IntentRequest } from 'ask-sdk-model';
 import * as http from 'http';
 
 const colors: { [color: string ]: { r: number, g: number, b: number } } = {
@@ -24,22 +25,25 @@ async function sendRequest(path: string, body?: any): Promise<void> {
 
 const SetColorHandler: Alexa.RequestHandler = {
     canHandle(input) {
-        const request = input.requestEnvelope.request;
+        const { request } = input.requestEnvelope;
         // request.type === 'LaunchRequest' ?
         return request.type === 'IntentRequest' && request.intent.name === 'SetColor';
     },
     async handle(input) {
         console.log('Handling SetColor intent');
 
-        const { request } = input.requestEnvelope as any; //TODO why do I need to cast?
-        const { colorInput } = request.intent.slots;
-        if (!colorInput.value || colorInput.value === '?') {
+        const request = input.requestEnvelope.request as IntentRequest;
+        const colorInput = request.intent.slots && request.intent.slots['color']
+            ? request.intent.slots['color'].value
+            : undefined;
+        
+        if (!colorInput || colorInput === '?') {
             return input.responseBuilder
                 .speak("I don't know what's going on.")
                 .getResponse();
         }
 
-        const color = colors[colorInput.value];
+        const color = colors[colorInput];
         if (!color) {
             return input.responseBuilder
                 .speak("I don't know how to make that color.")

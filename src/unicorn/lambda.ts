@@ -1,46 +1,91 @@
-import * as Alexa from 'alexa-sdk';
+import * as Alexa from 'ask-sdk-core';
+import { IntentRequest } from 'ask-sdk-model';
 import * as http from 'http';
 
-function sendRequest(alexa: Alexa.Handler<Alexa.Request>, path: string, body?: any) {
+async function sendRequest(path: string, body?: any): Promise<void> {
     const options = { 
-        hostname: '192.168.1.110',
-        port: 80,
         method: 'POST',
-        path,
-        body,
-        rejectUnauthorized: false,
+        hostname: '192.168.1.110', port: 80,
+        path, body, rejectUnauthorized: false,
         headers: { 'Content-Type': 'application/json' }
     };
 
-    const request = http.request(options, response => {
-        alexa.emit(':tell', 'Okay');
+    return new Promise<void>((resolve, reject) => {
+        http.request(options, () => resolve())
+            .on('error', err => reject(err))
+            .end();
     });
-
-    request.on('error', err => { console.dir(err); alexa.emit(':tell', 'An error occurred when attempting to send the command'); });
-    request.end();
 }
 
-const powerHandlers: Alexa.Handlers<Alexa.Request> = {
-    'LightOn': function () {
+const LightOnHandler: Alexa.RequestHandler = {
+    canHandle(input) {
+        const { request } = input.requestEnvelope;
+        return request.type === 'IntentRequest' && request.intent.name === 'LightOn';
+    },
+    async handle(input) {
         console.log('Handling LightOn intent');
-        sendRequest(this, '/api/light/on');
+        try {
+            sendRequest('/api/light/on');
+        } catch (err) {
+            return input.responseBuilder
+                .speak('An error occurred while contacting the device.')
+                .getResponse();
+        }
+
+        return input.responseBuilder.speak('Okay').getResponse();
+    }
+}
+
+const LightOffHandler: Alexa.RequestHandler = {
+    canHandle(input) {
+        const { request } = input.requestEnvelope;
+        return request.type === 'IntentRequest' && request.intent.name === 'LightOff';
     },
-    'LightOff': function () {
+    async handle(input) {
         console.log('Handling LightOff intent');
-        sendRequest(this, '/api/light/off');
+        try {
+            sendRequest('/api/light/off');
+        } catch (err) {
+            return input.responseBuilder
+                .speak('An error occurred while contacting the device.')
+                .getResponse();
+        }
+
+        return input.responseBuilder.speak('Okay').getResponse();
+    }
+}
+
+const LightFlashHandler: Alexa.RequestHandler = {
+    canHandle(input) {
+        const { request } = input.requestEnvelope;
+        return request.type === 'IntentRequest' && request.intent.name === 'LightOff';
     },
-    'LightFlash': function () {
+    async handle(input) {
         console.log('Handling LightFlash intent');
 
-        const countSlot = { value: 0 }; // this.event.request.intent.slots['count'];
-        const count = countSlot && !isNaN(countSlot.value) ? countSlot.value : 2;
+        const request = input.requestEnvelope.request as IntentRequest;
+        const count = request.intent.slots && request.intent.slots['count']
+            ? request.intent.slots['count'].value
+            : undefined;
+        
+        if (!isNaN(count as any)) {
+            return input.responseBuilder
+                .speak("I don't know what's going on.")
+                .getResponse();
+        }
 
-        sendRequest(this, '/api/light/flash', { count });
+        try {
+            sendRequest('/api/light/flash', { count });
+        } catch (err) {
+            return input.responseBuilder
+                .speak('An error occurred while contacting the device.')
+                .getResponse();
+        }
+
+        return input.responseBuilder.speak('Okay').getResponse();
     }
-};
+}
 
-exports.handler = function (event: Alexa.RequestBody<Alexa.Request>, context: Alexa.Context) {
-    const alexa = Alexa.handler(event, context);
-    alexa.registerHandlers(powerHandlers);
-    alexa.execute();
-};
+exports.handler = Alexa.SkillBuilders.custom()
+    .addRequestHandlers(LightOnHandler, LightOffHandler, LightFlashHandler)
+    .lambda();
