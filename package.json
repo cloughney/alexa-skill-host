@@ -1,7 +1,7 @@
 {
-  "name": "media-center-skill",
+  "name": "alexa-skill-host",
   "version": "1.0.0",
-  "description": "An Alexa skill for controlling the Media Center server.",
+  "description": "A service used to host Alexa skill lambda functions.",
   "main": "index.js",
   "dependencies": {
     "ask-sdk-core": "^2.1.0",
@@ -27,12 +27,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cloughney/media-center-skill.git"
+    "url": "git+https://github.com/cloughney/alexa-skill-host.git"
   },
   "author": "Chris Loughney <me@chrisloughney.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/cloughney/media-center-skill/issues"
+    "url": "https://github.com/cloughney/alexa-skill-host/issues"
   },
-  "homepage": "https://github.com/cloughney/media-center-skill#readme"
+  "homepage": "https://github.com/cloughney/alexa-skill-host#readme"
 }
