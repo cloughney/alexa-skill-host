@@ -36,6 +36,8 @@ const SetColorHandler: Alexa.RequestHandler = {
         const colorInput = request.intent.slots && request.intent.slots['color']
             ? request.intent.slots['color'].value
             : undefined;
+
+        console.log(colorInput);
         
         if (!colorInput || colorInput === '?') {
             return input.responseBuilder
@@ -50,6 +52,8 @@ const SetColorHandler: Alexa.RequestHandler = {
                 .getResponse();
         }
 
+        console.log('making call...');
+
         try {
             await sendRequest('/api/lights/1', { mode: 'color', color });
         } catch (err) {
@@ -58,6 +62,8 @@ const SetColorHandler: Alexa.RequestHandler = {
                 .speak('An error occurred while contacting the device.')
                 .getResponse();
         }
+
+        console.log('call complete');
 
         return input.responseBuilder
             .speak('Okay')
