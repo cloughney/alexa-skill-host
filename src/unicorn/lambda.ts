@@ -1,19 +1,18 @@
 import * as Alexa from 'ask-sdk-core';
 import { IntentRequest } from 'ask-sdk-model';
-import * as http from 'http';
+import * as request from 'request';
 
 async function sendRequest(path: string, body?: any): Promise<void> {
-    const options = { 
-        method: 'POST',
-        hostname: '192.168.1.110', port: 80,
-        path, body, rejectUnauthorized: false,
-        headers: { 'Content-Type': 'application/json' }
-    };
+    const options: request.CoreOptions = { method: 'POST', json: body };
 
     return new Promise<void>((resolve, reject) => {
-        http.request(options, () => resolve())
-            .on('error', err => reject(err))
-            .end();
+        request(`http://192.168.1.110${path}`, options, (err, response, body) => {
+            if (err || response.statusCode !== 200) {
+                reject(err || body);
+            } else {
+                resolve();
+            }
+        });
     });
 }
 

@@ -9,19 +9,15 @@ const colors: { [color: string ]: { r: number, g: number, b: number } } = {
 };
 
 async function sendRequest(path: string, body?: any): Promise<void> {
-    const options: request.CoreOptions = {
-        method: 'POST',
-        json: body
-    };
+    const options: request.CoreOptions = { method: 'POST', json: body };
 
     return new Promise<void>((resolve, reject) => {
         request(`http://192.168.1.174${path}`, options, (err, response, body) => {
             if (err || response.statusCode !== 200) {
                 reject(err || body);
-                return;
+            } else {
+                resolve();
             }
-
-            resolve();
         });
     });
 }
