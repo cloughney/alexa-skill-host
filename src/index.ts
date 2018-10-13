@@ -1,18 +1,25 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import context = require('aws-lambda-mock-context');
+import { LambdaHandler } from 'ask-sdk-core/dist/skill/factory/BaseSkillFactory';
 
 import config from '../config';
 
-function routeRequest(request: any, response: any, name: string, lambda: any): void {
+function routeRequest(request: express.Request, response: express.Response, name: string, lambda: LambdaHandler): void {
     console.log('Accepting ' + name + ' request');
 
     const requestContext = context();
-    requestContext.Promise
-        .then(x => { return response.status(200).json(x); })
-        .catch(x => { console.log(x); });
+    lambda(request.body, requestContext, (err, result) => {
+        console.log(err);
+        console.log(result);
 
-    lambda.handler(request.body, requestContext);
+        if (err) {
+            response.status(500).send();
+            return;
+        }
+
+        response.status(200).json(result);
+    });
 }
 
 const app = express()
@@ -20,6 +27,8 @@ const app = express()
 
 config.lambdas.forEach(x =>
     app.post(`/alexa/${x.name}`, (req, res) => {
+        console.log(req);
+        console.log(x.lambda);
         routeRequest(req, res, x.name, x.lambda);
     }));
 

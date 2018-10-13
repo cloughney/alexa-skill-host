@@ -1,4 +1,4 @@
-import { Handler, Request } from 'alexa-sdk';
+import { LambdaHandler } from 'ask-sdk-core/dist/skill/factory/BaseSkillFactory';
 
 interface ServerConfiguration {
     hostname: string;
@@ -12,7 +12,7 @@ interface ServerConfiguration {
 
 interface LambdaModuleConfiguration {
     name: string;
-    lambda: Handler<Request>;
+    lambda: LambdaHandler;
 }
 
 interface Configuration {
