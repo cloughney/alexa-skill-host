@@ -1,5 +1,4 @@
 import * as express from 'express';
-import * as fs from 'fs';
 import * as bodyParser from 'body-parser';
 import context = require('aws-lambda-mock-context');
 
