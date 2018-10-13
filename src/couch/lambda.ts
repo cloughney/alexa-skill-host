@@ -17,7 +17,7 @@ async function sendRequest(path: string, body?: any): Promise<void> {
     };
 
     return new Promise<void>((resolve, reject) => {
-        http.request(options, () => resolve())
+        http.request(options, resp => { console.log(resp); resolve(); })
             .on('error', err => reject(err))
             .end();
     });
