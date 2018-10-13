@@ -11,15 +11,21 @@ const colors: { [color: string ]: { r: number, g: number, b: number } } = {
 async function sendRequest(path: string, body?: any): Promise<void> {
     const options = {
         method: 'POST', 
-        hostname: '192.168.1.174', port: 80,
-        path, body, rejectUnauthorized: false,
+        hostname: '192.168.1.174',
+        port: 80,
+        path,
         headers: { 'Content-Type': 'application/json' }
     };
 
     return new Promise<void>((resolve, reject) => {
-        http.request(options, resp => { console.log(resp); resolve(); })
-            .on('error', err => reject(err))
-            .end();
+        const request = http.request(options, resp => resolve())
+            .on('error', err => reject(err));
+        
+        if (body) {
+            request.write(JSON.stringify(body));
+        }
+
+        request.end();
     });
 }
 
@@ -36,8 +42,6 @@ const SetColorHandler: Alexa.RequestHandler = {
         const colorInput = request.intent.slots && request.intent.slots['color']
             ? request.intent.slots['color'].value
             : undefined;
-
-        console.log(colorInput);
         
         if (!colorInput || colorInput === '?') {
             return input.responseBuilder
@@ -52,8 +56,6 @@ const SetColorHandler: Alexa.RequestHandler = {
                 .getResponse();
         }
 
-        console.log('making call...');
-
         try {
             await sendRequest('/api/lights/1', { mode: 'color', color });
         } catch (err) {
@@ -62,8 +64,6 @@ const SetColorHandler: Alexa.RequestHandler = {
                 .speak('An error occurred while contacting the device.')
                 .getResponse();
         }
-
-        console.log('call complete');
 
         return input.responseBuilder
             .speak('Okay')

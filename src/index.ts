@@ -10,10 +10,8 @@ function routeRequest(request: express.Request, response: express.Response, name
 
     const requestContext = context();
     handler(request.body, requestContext, (err, result) => {
-        console.log(err);
-        console.log(result);
-
         if (err) {
+            console.dir(err);
             response.status(500).send();
             return;
         }
