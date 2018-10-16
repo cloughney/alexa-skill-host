@@ -9,5 +9,5 @@
 		"outDir": "dist"
     },
     "compileOnSave": false,
-    "include": ["src/**/*.ts"]
+    "include": ["src/**/*.ts", "config.ts"]
 }

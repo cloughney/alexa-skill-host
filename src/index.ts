@@ -23,10 +23,11 @@ function routeRequest(request: express.Request, response: express.Response, name
 const app = express()
     .use(bodyParser.json({ type: 'application/json' }));
 
-config.lambdas.forEach(x =>
-    app.post(`/alexa/${x.name}`, (req, res) => {
-        routeRequest(req, res, x.name, x.lambda.handler);
-    }));
+config.skills.forEach(skill => {
+    app.post(`/alexa/${skill.name}`, (req, res) => {
+        routeRequest(req, res, skill.name, skill.module.handler);
+    });
+});
 
 app.listen(config.server.port, config.server.hostname, () => {
     console.log(`Alexa skill host is active. (${config.server.hostname}:${config.server.port})`);
