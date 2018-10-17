@@ -1,6 +1,7 @@
 import * as Alexa from 'ask-sdk-core';
 import { IntentRequest } from 'ask-sdk-model';
 import * as request from 'request';
+import { RequestHandler } from '../RequestHandler';
 
 const colors: { [color: string ]: { r: number, g: number, b: number } } = {
     'red': { r: 255, g: 0, b: 0 },
@@ -12,15 +13,13 @@ async function sendRequest(path: string, body?: any): Promise<void> {
     const options: request.CoreOptions = { method: 'POST', json: body };
 
     return new Promise<void>((resolve, reject) => {
-        request(`http://192.168.1.174${path}`, options, (err, response, body) => {
-            if (err || response.statusCode !== 200) {
-                reject(err || body);
-            } else {
-                resolve();
-            }
-        });
+        request(`http://192.168.1.174${path}`, options, (err, response, body) =>
+            err || response.statusCode !== 200 ? reject(err || body) : resolve());
     });
 }
+
+const SetColorHandler = new RequestHandler()
+    .addRequestHandler('IntentRequest', (input, request) => null, (input, request) => request.intent.name === 'SetColor')
 
 const SetColorHandler: Alexa.RequestHandler = {
     canHandle(input) {
@@ -62,6 +61,10 @@ const SetColorHandler: Alexa.RequestHandler = {
             .speak('Okay')
             .getResponse();
     }
+}
+
+const SetBrightnessHandler:Alexa.RequestHandler = {
+
 }
 
 const TurnOffHandler: Alexa.RequestHandler = {
