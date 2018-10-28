@@ -75,7 +75,20 @@ async function getDeviceState(id: string): Promise<Response> {
 async function setDevicePowerState(id: string, state: 'on' | 'off'): Promise<Response> {
     const device = devices.find(x => x.id === id);
 
-    return device ? { code: 200, body: {} } : { code: 404 };
+    if (!device) {
+        return { code: 404 };
+    }
+
+    if (state === 'on') {
+        sendRequest(`${device.endpoint}`, {
+            mode: 'color',
+            color: { r: 128, g: 128, b: 128 }
+        });
+    } else {
+        sendRequest(`${device.endpoint}`, { mode: 'off' });
+    }
+
+    return { code: 204 };
 }
 
 export const homeApiRouter = express.Router()
