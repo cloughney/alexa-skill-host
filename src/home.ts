@@ -134,4 +134,4 @@ export const homeApiRouter = express.Router()
     .get('/devices/:id', (req, res) => handleRequest(req, res, getDeviceState.bind(null, req.params.id)))
     .post('/devices/:id/power/:state(on|off)', (req, res) => handleRequest(req, res, setDevicePowerState.bind(null, req.params.id, req.params.state)))
     .post('/devices/:id/brightness/:state(\d{1,3})', (req, res) => handleRequest(req, res, setDeviceBrightnessLevel.bind(null, req.params.id, req.params.state)))
-    .post('/devices/:id/color/:state(\d{1,3})', (req, res) => handleRequest(req, res, setDeviceColor.bind(null, req.params.id, req.params.state)));
+    .post('/devices/:id/color/:state', (req, res) => handleRequest(req, res, setDeviceColor.bind(null, req.params.id, req.params.state)));
