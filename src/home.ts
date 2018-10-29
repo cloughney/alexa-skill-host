@@ -1,14 +1,6 @@
 import * as express from 'express';
-import * as path from 'path';
-import * as fs from 'fs';
 import * as request from 'request';
 import { DeviceType, DeviceCapabilities, devices } from './data';
-
-const colors: { [color: string ]: { r: number, g: number, b: number } } = {
-    'red': { r: 255, g: 0, b: 0 },
-    'green': { r: 0, g: 255, b: 0 },
-    'blue': { r: 0, g: 0, b: 255 }
-};
 
 async function sendRequest(url: string, body?: any): Promise<void> {
     const options: request.CoreOptions = { method: 'POST', json: body };
@@ -91,8 +83,13 @@ async function setDevicePowerState(id: string, state: 'on' | 'off'): Promise<Res
     return { code: 204 };
 }
 
-async function setDeviceBrightnessLevel(id: string, state: number): Promise<Response> {
-    if (state < 1 || state > 100) {
+async function setDeviceBrightnessLevel(id: string, state: unknown): Promise<Response> {
+    if (typeof state !== 'object' || state === null || !('level' in state)) {
+        return { code: 400 };
+    }
+
+    const level: unknown | number = (state as any).level as unknown;
+    if (typeof level !== 'number' || level < 1 || level > 100) {
         return { code: 400 };
     }
 
@@ -102,16 +99,14 @@ async function setDeviceBrightnessLevel(id: string, state: number): Promise<Resp
         return { code: 404 };
     }
 
-    sendRequest(`${device.endpoint}`, {
-        mode: 'brightness',
-        level: state
-    });
+    sendRequest(`${device.endpoint}`, { mode: 'brightness', level });
 
     return { code: 204 };
 }
 
-async function setDeviceColor(id: string, state: string): Promise<Response> {
-    if (!(state in colors)) {
+async function setDeviceColor(id: string, state: unknown): Promise<Response> {
+    const isValidState = typeof state === 'object' && state !== null && 'r' in state && 'g' in state && 'b' in state;
+    if (!isValidState) {
         return { code: 400 };
     }
 
@@ -121,10 +116,7 @@ async function setDeviceColor(id: string, state: string): Promise<Response> {
         return { code: 404 };
     }
 
-    sendRequest(`${device.endpoint}`, {
-        mode: 'color',
-        color: colors[state]
-    });
+    sendRequest(`${device.endpoint}`, { mode: 'color', color: state });
 
     return { code: 204 };
 }
@@ -133,5 +125,5 @@ export const homeApiRouter = express.Router()
     .get('/devices', (req, res) => handleRequest(req, res, listDevices))
     .get('/devices/:id', (req, res) => handleRequest(req, res, getDeviceState.bind(null, req.params.id)))
     .post('/devices/:id/power/:state(on|off)', (req, res) => handleRequest(req, res, setDevicePowerState.bind(null, req.params.id, req.params.state)))
-    .post('/devices/:id/brightness/:state(\d{1,3})', (req, res) => handleRequest(req, res, setDeviceBrightnessLevel.bind(null, req.params.id, req.params.state)))
-    .post('/devices/:id/color/:state', (req, res) => handleRequest(req, res, setDeviceColor.bind(null, req.params.id, req.params.state)));
+    .post('/devices/:id/brightness', (req, res) => handleRequest(req, res, setDeviceBrightnessLevel.bind(null, req.params.id, req.body)))
+    .post('/devices/:id/color', (req, res) => handleRequest(req, res, setDeviceColor.bind(null, req.params.id, req.body)));
