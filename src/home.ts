@@ -49,6 +49,7 @@ async function listDevices(): Promise<Response> {
         body: devices.map(x => ({
             id: x.id,
             type: DeviceType[x.type],
+            name: x.name,
             capabilities: [
                 ...x.capabilities & DeviceCapabilities.Power ? [ 'POWER' ] : [],
                 ...x.capabilities & DeviceCapabilities.Brightness ? [ 'BRIGHTNESS' ] : [],
